@@ -62,7 +62,6 @@
 #include "HLTrigger/HLTcore/interface/HLTConfigProvider.h"
 #include "HLTrigger/HLTcore/interface/HLTPrescaleProvider.h"
 
-
 #include <memory>
 #include "FWCore/Framework/interface/Frameworkfwd.h"
 #include "CommonTools/UtilAlgos/interface/TFileService.h"
@@ -113,7 +112,6 @@
 #include "TMatrixDSymEigen.h"
 
 // User include files
-
 #include "fastjet/ClusterSequence.hh"
 #include "fastjet/ClusterSequenceArea.hh"
 #include "fastjet/contrib/Nsubjettiness.hh"
@@ -129,11 +127,12 @@
 #include "PhysicsTools/CandUtils/interface/EventShapeVariables.h"
 #include "PhysicsTools/CandUtils/interface/Thrust.h"
 
-
+#include "ScoutingNanoAOD_miniIso.h"
 
 using namespace std;
 using namespace fastjet;
 using namespace fastjet::contrib;
+
 
 //------------------------------------------------------------------------
  // the user information
@@ -357,6 +356,9 @@ private:
   vector<Float16_t>	       Electron_hcaliso;
   vector<Float16_t>            Electron_trkiso;
   vector<Float16_t>            Electron_combinediso;
+  vector<Float16_t>            Electron_miniIsoChg;
+  vector<Float16_t>            Electron_miniIsoAll;
+
   vector<bool>            Electron_ID;
 
 
@@ -418,6 +420,8 @@ private:
   vector<Float16_t>            Muon_trketaerror;
   vector<Float16_t>            Muon_trkdszerror;
   vector<Float16_t>            Muon_trkdsz;
+  vector<Float16_t>            Muon_miniIsoChg;
+  vector<Float16_t>            Muon_miniIsoAll;
 
   //Offline Muon
   UInt_t n_mu_off;
@@ -779,7 +783,8 @@ ScoutingNanoAOD_fromAOD::ScoutingNanoAOD_fromAOD(const edm::ParameterSet& iConfi
   tree->Branch("Electron_ID"               ,&Electron_ID   );
   tree->Branch("Electron_d0"               ,&Electron_d0              );
   tree->Branch("Electron_dz"               ,&Electron_dz              );
-
+  tree->Branch("Electron_miniIsoChg"       ,&Electron_miniIsoChg              );
+  tree->Branch("Electron_miniIsoAll"       ,&Electron_miniIsoAll              );
 
   //Scouting Photons
   tree->Branch("nPhotons"            	          ,&n_pho 			,"nPhotons/i");
@@ -824,7 +829,9 @@ ScoutingNanoAOD_fromAOD::ScoutingNanoAOD_fromAOD(const edm::ParameterSet& iConfi
   tree->Branch("Muon_tkphierror"               ,&Muon_trkphierror              );
   tree->Branch("Muon_tketaerror"               ,&Muon_trketaerror              );
   tree->Branch("Muon_tkdszerror"               ,&Muon_trkdszerror              );
-  tree->Branch("Muon_tkdsz"                    ,&Muon_trkdsz                   );
+  tree->Branch("Muon_miniIsoChg"               ,&Muon_miniIsoChg               );
+  tree->Branch("Muon_miniIsoAll"               ,&Muon_miniIsoAll               );
+
 
 
   //Scouting AK4 PFJets
@@ -1259,6 +1266,8 @@ void ScoutingNanoAOD_fromAOD::analyze(const edm::Event& iEvent, const edm::Event
   Electron_trkiso.clear();
   Electron_combinediso.clear();
   Electron_ID.clear();
+  Electron_miniIsoAll.clear();
+  Electron_miniIsoChg.clear();
   n_ele = 0;
 
   vector<ScoutingParticle> PFcands;
@@ -1295,7 +1304,7 @@ void ScoutingNanoAOD_fromAOD::analyze(const edm::Event& iEvent, const edm::Event
         bool electronID = false;
         if(abs(electrons_iter->eta())<1.479){
         combinediso = (electrons_iter->trackIso() + std::max(0.f,electrons_iter->ecalIso() -1.f) + electrons_iter->hcalIso()) / electron_p4.Et();
-          electronID = 
+        electronID = 
           (fabs(electrons_iter->dEtaIn()) < 0.007)
           & (fabs(electrons_iter->dPhiIn()) < 0.15)
           & (electrons_iter->sigmaIetaIeta() < 0.01)
@@ -1306,7 +1315,7 @@ void ScoutingNanoAOD_fromAOD::analyze(const edm::Event& iEvent, const edm::Event
           & (combinediso < 0.15);
         }else{
         combinediso = (electrons_iter->trackIso() + electrons_iter->ecalIso()  + electrons_iter->hcalIso()) / electron_p4.Et();
-          electronID = 
+        electronID = 
           (fabs(electrons_iter->dEtaIn()) < 0.009)
           & (fabs(electrons_iter->dPhiIn()) < 0.10)
           & (electrons_iter->sigmaIetaIeta() < 0.03)
@@ -1524,6 +1533,7 @@ void ScoutingNanoAOD_fromAOD::analyze(const edm::Event& iEvent, const edm::Event
   if(runScouting){
 
     for (auto pfcands_iter = pfcandsH->begin(); pfcands_iter != pfcandsH->end(); ++pfcands_iter) {
+
       ScoutingParticle tmp(MiniFloatConverter::float16to32(MiniFloatConverter::float32to16(pfcands_iter->pt())),MiniFloatConverter::float16to32(MiniFloatConverter::float32to16(pfcands_iter->eta())),MiniFloatConverter::float16to32(MiniFloatConverter::float32to16(pfcands_iter->phi())),pfcands_iter->m(),pfcands_iter->pdgId(),pfcands_iter->vertex());
     
       PFcands.push_back(tmp);
@@ -1724,6 +1734,41 @@ if(runOffline){
 }
 
 
+  //* loop over electrons to compute to compute the mini-isolation
+  if(runScouting){
+    for (auto electrons_iter = electronsH->begin(); electrons_iter != electronsH->end(); ++electrons_iter) 
+      {
+        TLorentzVector electron_p4 = TLorentzVector();
+        electron_p4.SetPtEtaPhiM(electrons_iter->pt(), electrons_iter->eta(), electrons_iter->phi(), electrons_iter->m());
+        reco::Candidate::PolarLorentzVector electron_p4_reco(electron_p4.Pt(), electron_p4.Eta(), electron_p4.Phi(), electron_p4.M());
+        pat::PFIsolation ele_miniiso =  getMiniPFIsolationScout(PFcands, electron_p4_reco);
+        auto chg = ele_miniiso.chargedHadronIso();
+        auto neu = ele_miniiso.neutralHadronIso();
+        auto pho = ele_miniiso.photonIso();
+        float scale = 1.0 / electrons_iter->pt();
+        Electron_miniIsoChg.push_back(scale * chg);
+        Electron_miniIsoAll.push_back(scale * (chg + std::max(0.0, static_cast<double>(neu + pho) )));
+        
+    }
+  }
+
+  // * Loop over Muons and compute mini-isolaton
+  if(runScouting){
+    for (auto muons_iter = muonsH->begin(); muons_iter != muonsH->end(); ++muons_iter) 
+      {
+        TLorentzVector muon_p4 = TLorentzVector();
+        muon_p4.SetPtEtaPhiM(muons_iter->pt(), muons_iter->eta(), muons_iter->phi(), muons_iter->m());
+        reco::Candidate::PolarLorentzVector muon_p4_reco(muon_p4.Pt(), muon_p4.Eta(), muon_p4.Phi(), muon_p4.M());
+        pat::PFIsolation mu_miniiso =  getMiniPFIsolationScout(PFcands, muon_p4_reco);
+        auto chg = mu_miniiso.chargedHadronIso();
+        auto neu = mu_miniiso.neutralHadronIso();
+        auto pho = mu_miniiso.photonIso();
+        float scale = 1.0 / muons_iter->pt();
+        Muon_miniIsoChg.push_back(scale * chg);
+        Muon_miniIsoAll.push_back(scale * (chg + std::max(0.0, static_cast<double>(neu + pho) )));
+        
+    }
+  }
 
   // * 
   // AK4 Jets 
@@ -2580,7 +2625,14 @@ if (runScouting & applyJECForAK4Scout){
     // --- calculate the jet correction
     // First use a dummy reco::PFJet and fill its 4-vector, in order to use the corrector
     reco::PFJet dummy_pfJet;
-    reco::Particle::LorentzVector dummy_jetP4(j.pt(), j.eta(), j.phi(), j.m());
+    //reco::Particle::LorentzVector dummy_jetP4(j.pt(), j.eta(), j.phi_std(), j.m());
+    float px = j.pt() * cos(j.phi_std());
+    float py = j.pt() * sin(j.phi_std());
+    float pz = j.pt() * sinh(j.eta());
+    float p = j.pt() * cosh(j.eta());
+    float energy = std::sqrt(p * p + j.m() * j.m());
+    reco::Particle::LorentzVector dummy_jetP4(px, py, pz, energy);
+
     dummy_pfJet.setP4(dummy_jetP4);
 
     //loop over constituents of the jet and compute the fractions of photons, electrons, muons, charged hadrons, neutral hadrons 
@@ -2653,8 +2705,7 @@ if (runScouting & applyJECForAK4Scout){
     double CHM =  sum_muon_multiplicity + sum_electron_multiplicity + sum_charged_hadron_multiplicity;
     //define the id
     bool passID = (abs(j.eta())<=2.4 && jet_charged_em_fraction < 0.8 && jet_neutral_em_fraction < 0.9 && jet_muon_fraction < 0.8 && jet_neutral_hadron_fraction < 0.9 && jet_charged_hadron_fraction > 0 && NumConst > 1 && CHM > 0);
-
-  
+ 
     //check if jet pT is larger then 15 GeV, and jet pass requirements for jetID
     double jec = 1.0;
     if (dummy_pfJet.pt() > 15.0 &&  passID )

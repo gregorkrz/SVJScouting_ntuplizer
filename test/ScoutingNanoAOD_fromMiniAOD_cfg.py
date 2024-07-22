@@ -375,12 +375,12 @@ process.mmtree = cms.EDAnalyzer('ScoutingNanoAOD_fromMiniAOD',
     metPhi            = cms.InputTag("hltScoutingPFPacker", "pfMetPhi"),
 
     #HLT AK4 PF jets
-    applyJECForAK4Scout=cms.bool(True),
+    applyJECForAK4Scout=cms.bool(False),
     jetCorrectorHLTAK4=cms.InputTag("ak4PFHLTL2L3Corrector"),
     jetAK4ScoutPtMin=cms.double(20),
     
     #HLT AK8 PF jets
-    applyJECForAK8Scout=cms.bool(True),
+    applyJECForAK8Scout=cms.bool(False),
     jetCorrectorHLTAK8=cms.InputTag("ak8PFHLTL2L3Corrector"),
     jetAK8ScoutPtMin=cms.double(100),
 
@@ -396,7 +396,7 @@ process.mmtree = cms.EDAnalyzer('ScoutingNanoAOD_fromMiniAOD',
 
     #Puppi AK8 PF
     ak8pfjetsReco=cms.InputTag("ak8PFJetsPuppi"),
-    applyJECForAK8=cms.bool(True),
+    applyJECForAK8=cms.bool(False),
     jetCorrectorAK8=cms.InputTag("ak8PFPuppiL2L3Corrector"),
     jetAK8PtMin=cms.double(100),
 
@@ -409,6 +409,10 @@ process.mmtree = cms.EDAnalyzer('ScoutingNanoAOD_fromMiniAOD',
     gens             = cms.InputTag("prunedGenParticles"),
     rho               = cms.InputTag("fixedGridRhoFastjetAllScouting"),
     rho2              = cms.InputTag("hltScoutingPFPacker","rho"),
+
+    #add matrix element info
+    addMatrixElementInfo=cms.bool(True),
+
 
 )
 
