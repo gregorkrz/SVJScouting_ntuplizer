@@ -373,7 +373,7 @@ process.mmtree = cms.EDAnalyzer('ScoutingNanoAOD_fromMiniAOD',
     vertices          = cms.InputTag("hltScoutingPrimaryVertexPacker","primaryVtx"),
     metPt             = cms.InputTag("hltScoutingPFPacker", "pfMetPt"),
     metPhi            = cms.InputTag("hltScoutingPFPacker", "pfMetPhi"),
-
+    addMatrixElementInfo = cms.bool(True),
     #HLT AK4 PF jets
     applyJECForAK4Scout=cms.bool(True),
     jetCorrectorHLTAK4=cms.InputTag("ak4PFHLTL2L3Corrector"),
