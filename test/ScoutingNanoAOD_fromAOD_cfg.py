@@ -434,6 +434,8 @@ process.ak8PFHLTL2L3CorrectorTask = cms.Task(
 )
 process.ak8PFHLTL2L3CorrectorSeq = cms.Sequence(process.ak8PFHLTL2L3CorrectorTask)
 
+if params.era == "2018":
+    era_18 = True
 
 process.mmtree = cms.EDAnalyzer('ScoutingNanoAOD_fromAOD',
     doL1              = cms.bool(False),
@@ -441,6 +443,7 @@ process.mmtree = cms.EDAnalyzer('ScoutingNanoAOD_fromAOD',
     doSignal          = cms.bool(runSig), 
     isMC              = cms.bool(params.isMC),
     era = cms.string(params.era),
+    era_18 = cms.bool(era_18),
     stageL1Trigger    = cms.uint32(2),
 
     hltProcess=cms.string("HLT"),

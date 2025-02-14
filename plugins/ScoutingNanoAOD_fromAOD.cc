@@ -301,7 +301,7 @@ private:
   bool doSignal;       
   bool isMC;
   //bool monitor;
-  bool era_16;
+  bool era_18;
   bool runScouting = false;
   bool runOffline =false;
   std::string label;
@@ -714,7 +714,7 @@ ScoutingNanoAOD_fromAOD::ScoutingNanoAOD_fromAOD(const edm::ParameterSet& iConfi
   doData                   (iConfig.existsAs<bool>("doData")            ?    iConfig.getParameter<bool>  ("doData")            : false),
   doSignal                 (iConfig.existsAs<bool>("doSignal")          ?    iConfig.getParameter<bool>  ("doSignal")            : false),
   isMC                     (iConfig.existsAs<bool>("isMC")              ?    iConfig.getParameter<bool>  ("isMC")            : true),
-  era_16                   (iConfig.existsAs<bool>("era_16")            ?    iConfig.getParameter<bool>  ("era_16")            : false),
+  era_18                   (iConfig.existsAs<bool>("era_18")            ?    iConfig.getParameter<bool>  ("era_18")            : false),
 
 
   hltPSProv_(iConfig,consumesCollector(),*this), //it needs a referernce to the calling module for some reason, hence the *this   
@@ -2432,7 +2432,8 @@ if(runOffline){
   }else{// rho=0;
     rho2=0;}
 
-  if(doSignal or (isMC and not era_16)){
+  //if(doSignal or (isMC and not era_18)){
+  if(doSignal or isMC){
     PSweights = genEvtInfo->weights();
     Handle<double> prefirewgt;
     iEvent.getByToken(prefireToken, prefirewgt);

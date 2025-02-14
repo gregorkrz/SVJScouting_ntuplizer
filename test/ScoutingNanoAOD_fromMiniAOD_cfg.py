@@ -101,6 +101,13 @@ params.register(
     'Flag to indicate whether or not signal is run'
 )
 
+params.register(
+    'MatrixElementInfo', 
+    False, 
+    VarParsing.multiplicity.singleton,VarParsing.varType.bool,
+    'Flag to indicate whether or not MatrixElementInfo is available'
+)
+
 # Define the process
 process = cms.Process("LL")
 
@@ -336,13 +343,17 @@ process.ak8PFHLTL2L3CorrectorTask = cms.Task(
 )
 process.ak8PFHLTL2L3CorrectorSeq = cms.Sequence(process.ak8PFHLTL2L3CorrectorTask)
 
+if params.era == "2018":
+    era_18 = True
 
 process.mmtree = cms.EDAnalyzer('ScoutingNanoAOD_fromMiniAOD',
     doL1              = cms.bool(False),
     doData            = cms.bool(not params.isMC and not params.signal),
-    doSignal          = cms.bool(runSig), 
+    doSignal          = cms.bool(runSig),
+    addMatrixElementInfo = cms.bool(params.MatrixElementInfo),
     isMC              = cms.bool(params.isMC),
     era = cms.string(params.era),
+    era_18 = cms.bool(era_18),
     stageL1Trigger    = cms.uint32(2),
 
     hltProcess=cms.string("HLT"),
