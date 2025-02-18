@@ -424,8 +424,8 @@ process.mmtree = cms.EDAnalyzer('ScoutingNanoAOD_fromMiniAOD',
 )
 
 process.p = cms.Path(process.puppi * process.ak8PFJetsPuppi * process.ak8PFPuppiL2L3CorrectorSeq * process.ak8PFHLTL2L3CorrectorSeq * process.ak4PFHLTL2L3CorrectorSeq * process.mmtree) 
-
-if(params.isMC):
+use_prefiring = False
+if(params.isMC and use_prefiring):
 #if(runSig or (params.isMC and not params.era=="2016")):
 #if(runSig):
 #if(params.signal):
