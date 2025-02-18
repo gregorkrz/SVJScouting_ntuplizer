@@ -345,6 +345,7 @@ process.ak8PFHLTL2L3CorrectorSeq = cms.Sequence(process.ak8PFHLTL2L3CorrectorTas
 
 if params.era == "2018":
     era_18 = True
+    print("Era is 2018")
 
 process.mmtree = cms.EDAnalyzer('ScoutingNanoAOD_fromMiniAOD',
     doL1              = cms.bool(False),
