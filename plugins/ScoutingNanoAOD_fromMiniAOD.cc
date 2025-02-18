@@ -279,9 +279,9 @@ private:
 
 
   const edm::EDGetTokenT<double>  	rhoToken2;
-  const edm::EDGetTokenT<double>  	prefireToken;
-  const edm::EDGetTokenT<double>  	prefireTokenup;
-  const edm::EDGetTokenT<double>  	prefireTokendown;
+  //const edm::EDGetTokenT<double>  	prefireToken;
+  //const edm::EDGetTokenT<double>  	prefireTokenup;
+  //const edm::EDGetTokenT<double>  	prefireTokendown;
 
   std::vector<std::string> triggerPathsVector;
   std::map<std::string, int> triggerPathsMap;
@@ -722,9 +722,9 @@ ScoutingNanoAOD_fromMiniAOD::ScoutingNanoAOD_fromMiniAOD(const edm::ParameterSet
   addMatrixElementInfo     (iConfig.existsAs<bool>("addMatrixElementInfo")    ?    iConfig.getParameter<bool>  ("addMatrixElementInfo")    : false),
   
   rhoToken2                (consumes<double>                                 (iConfig.getParameter<edm::InputTag>("rho2"))),
-  prefireToken             (consumes<double>                                 (edm::InputTag("prefiringweight:nonPrefiringProb"))),
-  prefireTokenup           (consumes<double>                                 (edm::InputTag("prefiringweight:nonPrefiringProbUp"))),
-  prefireTokendown         (consumes<double>                                 (edm::InputTag("prefiringweight:nonPrefiringProbDown"))),
+  //prefireToken             (consumes<double>                                 (edm::InputTag("prefiringweight:nonPrefiringProb"))),
+  //prefireTokenup           (consumes<double>                                 (edm::InputTag("prefiringweight:nonPrefiringProbUp"))),
+  //prefireTokendown         (consumes<double>                                 (edm::InputTag("prefiringweight:nonPrefiringProbDown"))),
 
   doL1                     (iConfig.existsAs<bool>("doL1")              ?    iConfig.getParameter<bool>  ("doL1")            : false),
   doData                   (iConfig.existsAs<bool>("doData")            ?    iConfig.getParameter<bool>  ("doData")            : false),
