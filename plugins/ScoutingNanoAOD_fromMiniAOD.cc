@@ -2281,17 +2281,17 @@ if(runOffline){
   }else{// rho=0;
     rho2=0;}
 
-  if(doSignal or (isMC and not era_18)){
-    PSweights = genEvtInfo->weights();
-    Handle<double> prefirewgt;
-    iEvent.getByToken(prefireToken, prefirewgt);
-    prefire = *prefirewgt;
-    Handle<double> prefirewgtup;
-    iEvent.getByToken(prefireTokenup, prefirewgtup);
-    prefireup = *prefirewgtup;
-    Handle<double> prefirewgtdown;
-    iEvent.getByToken(prefireTokendown, prefirewgtdown);
-    prefiredown = *prefirewgtdown;
+  //if(doSignal or (isMC and not era_18)){
+   // PSweights = genEvtInfo->weights();
+    //Handle<double> prefirewgt;
+   // iEvent.getByToken(prefireToken, prefirewgt);
+   // prefire = *prefirewgt;
+   // Handle<double> prefirewgtup;
+   // iEvent.getByToken(prefireTokenup, prefirewgtup);
+    //prefireup = *prefirewgtup;
+   // Handle<double> prefirewgtdown;
+   // iEvent.getByToken(prefireTokendown, prefirewgtdown);
+  //  prefiredown = *prefirewgtdown;
   }
 
 
