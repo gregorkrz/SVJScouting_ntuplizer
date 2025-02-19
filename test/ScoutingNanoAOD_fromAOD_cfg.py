@@ -532,6 +532,7 @@ if(params.isMC):
 #if(runSig):
 #if(params.signal):
   #print("test1",runSig,params.isMC,params.era,(params.isMC and not params.era=="2016"))
+  print("--------------------------------HERE!!!!!!")
   from PhysicsTools.PatUtils.l1PrefiringWeightProducer_cfi import l1PrefiringWeightProducer
   process.prefiringweight = l1PrefiringWeightProducer.clone(
   ThePhotons           = cms.InputTag("hltScoutingEgammaPacker"),
