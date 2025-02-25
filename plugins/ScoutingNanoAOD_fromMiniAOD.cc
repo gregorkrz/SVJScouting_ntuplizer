@@ -631,6 +631,25 @@ private:
   vector<Float16_t> MatrixElementGenParticle_pdgId; 
   vector<Float16_t> MatrixElementGenParticle_status;
 
+
+  UInt_t                       n_FinalPartonLevelParticle;
+  // final parton level particles
+  vector<Float16_t> FinalPartonLevelParticle_pt;
+  vector<Float16_t> FinalPartonLevelParticle_eta;
+  vector<Float16_t> FinalPartonLevelParticle_phi;
+  vector<Float16_t> FinalPartonLevelParticle_mass;
+  vector<Float16_t> FinalPartonLevelParticle_pdgId;
+  vector<Float16_t> FinalPartonLevelParticle_status;
+
+  UInt_t                       n_FinalGenParticle;
+  // final gen particles
+  vector<Float16_t> FinalGenParticle_pt;
+  vector<Float16_t> FinalGenParticle_eta;
+  vector<Float16_t> FinalGenParticle_phi;
+  vector<Float16_t> FinalGenParticle_mass;
+  vector<Float16_t> FinalGenParticle_pdgId;
+  vector<Float16_t> FinalGenParticle_status;
+
   //ISR gluon
   vector<Float16_t> ISRGluonGenParticle_pt;  
   vector<Float16_t> ISRGluonGenParticle_eta;  
@@ -1056,6 +1075,27 @@ ScoutingNanoAOD_fromMiniAOD::ScoutingNanoAOD_fromMiniAOD(const edm::ParameterSet
   tree->Branch("MatrixElementGenParticle_mass"                  ,&MatrixElementGenParticle_mass               ); 
   tree->Branch("MatrixElementGenParticle_pdgId"                 ,&MatrixElementGenParticle_pdgId              ); 
   tree->Branch("MatrixElementGenParticle_status"                 ,&MatrixElementGenParticle_status              );
+
+  //add FinalPartonLevelParticle info
+    tree->Branch("FinalPartonLevelParticle_pt"                    ,&FinalPartonLevelParticle_pt                 );
+    tree->Branch("FinalPartonLevelParticle_eta"                   ,&FinalPartonLevelParticle_eta                );
+    tree->Branch("FinalPartonLevelParticle_phi"                   ,&FinalPartonLevelParticle_phi                );
+    tree->Branch("FinalPartonLevelParticle_mass"                  ,&FinalPartonLevelParticle_mass               );
+    tree->Branch("FinalPartonLevelParticle_pdgId"                 ,&FinalPartonLevelParticle_pdgId              );
+    tree->Branch("FinalPartonLevelParticle_status"                 ,&FinalPartonLevelParticle_status              );
+
+  //add FinalGenParticle info
+    tree->Branch("FinalGenParticle_pt"                    ,&FinalGenParticle_pt                 );
+    tree->Branch("FinalGenParticle_eta"                   ,&FinalGenParticle_eta                );
+    tree->Branch("FinalGenParticle_phi"                   ,&FinalGenParticle_phi                );
+    tree->Branch("FinalGenParticle_mass"                  ,&FinalGenParticle_mass               );
+    tree->Branch("FinalGenParticle_pdgId"                 ,&FinalGenParticle_pdgId              );
+    tree->Branch("FinalGenParticle_status"                 ,&FinalGenParticle_status              );
+
+
+
+  // add Gen Final state particles
+
 
   //add GenParticle info
   tree->Branch("ISRGluonGenParticle_pt"                    ,&ISRGluonGenParticle_pt                 );  
@@ -2490,6 +2530,20 @@ if (addMatrixElementInfo){
     MatrixElementGenParticle_pdgId.clear();
     MatrixElementGenParticle_status.clear();
 
+    FinalGenParticle_pt.clear();
+    FinalGenParticle_eta.clear();
+    FinalGenParticle_phi.clear();
+    FinalGenParticle_mass.clear();
+    FinalGenParticle_pdgId.clear();
+    FinalGenParticle_status.clear();
+
+    FinalPartonLevelParticle_pt.clear();
+    FinalPartonLevelParticle_eta.clear();
+    FinalPartonLevelParticle_phi.clear();
+    FinalPartonLevelParticle_mass.clear();
+    FinalPartonLevelParticle_pdgId.clear();
+    FinalPartonLevelParticle_status.clear();
+
     ISRGluonGenParticle_pt.clear();
     ISRGluonGenParticle_eta.clear();
     ISRGluonGenParticle_phi.clear();
@@ -2552,6 +2606,24 @@ if (addMatrixElementInfo){
         MatrixElementGenParticle_mass.push_back(genP.mass());
         MatrixElementGenParticle_pdgId.push_back(genP.pdgId());
         MatrixElementGenParticle_status.push_back(genP.status());
+      }
+
+      if (genP.isFinalPartonLevel()) {
+        FinalPartonLevelParticle_pt.push_back(genP.pt());
+        FinalPartonLevelParticle_eta.push_back(genP.eta());
+        FinalPartonLevelParticle_phi.push_back(genP.phi());
+        FinalPartonLevelParticle_mass.push_back(genP.mass());
+        FinalPartonLevelParticle_pdgId.push_back(genP.pdgId());
+        FinalPartonLevelParticle_status.push_back(genP.status());
+      }
+
+      if (genP.isFinal()) {
+        FinalGenParticle_pt.push_back(genP.pt());
+        FinalGenParticle_eta.push_back(genP.eta());
+        FinalGenParticle_phi.push_back(genP.phi());
+        FinalGenParticle_mass.push_back(genP.mass());
+        FinalGenParticle_pdgId.push_back(genP.pdgId());
+        FinalGenParticle_status.push_back(genP.status());
       }
 
       n_genp++;
