@@ -418,6 +418,7 @@ process.mmtree = cms.EDAnalyzer('ScoutingNanoAOD_fromMiniAOD',
     pileupinfo_sig    = cms.InputTag("slimmedAddPileupInfo"),
     geneventinfo     = cms.InputTag("generator"),
     gens             = cms.InputTag("prunedGenParticles"),
+    gens_packed_status1 = cms.InputTag("packedGenParticles"),
     rho               = cms.InputTag("fixedGridRhoFastjetAllScouting"),
     rho2              = cms.InputTag("hltScoutingPFPacker","rho"),
 

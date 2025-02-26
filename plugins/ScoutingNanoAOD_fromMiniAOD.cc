@@ -274,6 +274,7 @@ private:
   const edm::EDGetTokenT<GenEventInfoProduct>                   genEvtInfoToken;
   const edm::EDGetTokenT<GenLumiInfoHeader>  	                  genLumiInfoHeadTag_;
   const edm::EDGetTokenT<std::vector<reco::GenParticle>>       gensToken;
+  const edm::EDGetTokenT<std::vector<pat::PackedGenParticle>>       packedGenParticles;
 
   bool addMatrixElementInfo;
 
@@ -737,7 +738,7 @@ ScoutingNanoAOD_fromMiniAOD::ScoutingNanoAOD_fromMiniAOD(const edm::ParameterSet
   genEvtInfoToken          (consumes<GenEventInfoProduct>                    (iConfig.getParameter<edm::InputTag>("geneventinfo"))), 
   genLumiInfoHeadTag_(consumes<GenLumiInfoHeader,edm::InLumi>(edm::InputTag("generator"))),   
   gensToken                (consumes<std::vector<reco::GenParticle>>               (iConfig.getParameter<edm::InputTag>("gens"))),
-
+  packedGenParticles       (consumes<std::vector<pat::PackedGenParticle>>          (iConfig.getParameter<edm::InputTag>("gens_packed_status1"))),
   addMatrixElementInfo     (iConfig.existsAs<bool>("addMatrixElementInfo")    ?    iConfig.getParameter<bool>  ("addMatrixElementInfo")    : false),
   
   rhoToken2                (consumes<double>                                 (iConfig.getParameter<edm::InputTag>("rho2"))),
