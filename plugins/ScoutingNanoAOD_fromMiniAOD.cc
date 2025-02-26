@@ -2571,6 +2571,7 @@ if (addMatrixElementInfo){
         FinalGenParticle_mass.push_back(genP.mass());
         FinalGenParticle_pdgId.push_back(genP.pdgId());
         FinalGenParticle_status.push_back(genP.status());
+        n_packed_genp++;
     }
     for (size_t i = 0; i < genP_iter->size(); ++ i) {
       const GenParticle & genP = (*genP_iter)[i];
