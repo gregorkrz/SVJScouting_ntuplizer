@@ -2608,7 +2608,7 @@ if (addMatrixElementInfo){
         MatrixElementGenParticle_status.push_back(genP.status());
       }
 
-      if (genP.isFinalPartonLevel()) {
+      if (genP.status() >= 51 & genP.status() <= 59) {
         FinalPartonLevelParticle_pt.push_back(genP.pt());
         FinalPartonLevelParticle_eta.push_back(genP.eta());
         FinalPartonLevelParticle_phi.push_back(genP.phi());
@@ -2617,7 +2617,7 @@ if (addMatrixElementInfo){
         FinalPartonLevelParticle_status.push_back(genP.status());
       }
 
-      if (genP.isFinal()) {
+      if (genP.status() >= 81 & genP.status() <= 89){
         FinalGenParticle_pt.push_back(genP.pt());
         FinalGenParticle_eta.push_back(genP.eta());
         FinalGenParticle_phi.push_back(genP.phi());
