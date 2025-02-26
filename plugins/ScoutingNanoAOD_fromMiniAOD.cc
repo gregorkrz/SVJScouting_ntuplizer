@@ -272,9 +272,9 @@ private:
   const edm::EDGetTokenT<std::vector<PileupSummaryInfo> >       pileupInfoToken;
   const edm::EDGetTokenT<std::vector<PileupSummaryInfo> >       pileupInfoToken2;
   const edm::EDGetTokenT<GenEventInfoProduct>                   genEvtInfoToken;
-  const edm::EDGetTokenT<GenLumiInfoHeader>  	                  genLumiInfoHeadTag_;
-  const edm::EDGetTokenT<std::vector<reco::GenParticle>>       gensToken;
-  const edm::EDGetTokenT<std::vector<pat::PackedGenParticle>>       packedGenParticles;
+  const edm::EDGetTokenT<GenLumiInfoHeader>  	                genLumiInfoHeadTag_;
+  const edm::EDGetTokenT<std::vector<reco::GenParticle>>        gensToken;
+  const edm::EDGetTokenT<std::vector<pat::PackedGenParticle>>   packedGenParticles;
 
   bool addMatrixElementInfo;
 
@@ -2522,7 +2522,7 @@ if (addMatrixElementInfo){
 
     Handle<GenParticleCollection> genP_iter;
     iEvent.getByToken(gensToken, genP_iter);
-    Handle<PackedGenParticleCollection> packedGenP_iter;
+    Handle<pat::PackedGenParticleCollection> packedGenP_iter;
     iEvent.getByToken(packedGenParticles, packedGenP_iter);
 
     int n_genp = 0;
@@ -2564,7 +2564,7 @@ if (addMatrixElementInfo){
     DarkMatterParticles_pdgId.clear();
     DarkMatterParticles_status.clear();
     for (size_t i = 0; i < packedGenP_iter->size(); ++ i) {
-        const PackedGenParticle & genP = (*packedGenP_iter)[i];
+        const pat::PackedGenParticle & genP = (*packedGenP_iter)[i];
         FinalGenParticle_pt.push_back(genP.pt());
         FinalGenParticle_eta.push_back(genP.eta());
         FinalGenParticle_phi.push_back(genP.phi());
