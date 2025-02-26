@@ -2515,6 +2515,8 @@ if(runOffline){
 
 cout << "genInfo: " << addMatrixElementInfo << endl;
 if (addMatrixElementInfo){
+
+    all_genP_statuses = set<int>();
     //Genparticles genp
 
     Handle<GenParticleCollection> genP_iter;
@@ -2598,6 +2600,7 @@ if (addMatrixElementInfo){
         ISRGluonGenParticle_pdgId.push_back(genP.pdgId());
         ISRGluonGenParticle_status.push_back(genP.status());
       }
+      all_genP_statuses.insert(genP.status());
 
       if (genP.status() == 23){
         MatrixElementGenParticle_pt.push_back(genP.pt());
@@ -2629,6 +2632,12 @@ if (addMatrixElementInfo){
       n_genp++;
   
     }
+    // print genp statuses
+    cout << "genP statuses: ";
+    for (auto it = all_genP_statuses.begin(); it != all_genP_statuses.end(); ++it){
+      cout << *it << " ";
+    }
+    cout << endl;
 }
 
 
