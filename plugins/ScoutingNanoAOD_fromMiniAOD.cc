@@ -2516,7 +2516,7 @@ if(runOffline){
 cout << "genInfo: " << addMatrixElementInfo << endl;
 if (addMatrixElementInfo){
 
-    all_genP_statuses = set<int>();
+    set<int> all_genP_statuses;
     //Genparticles genp
 
     Handle<GenParticleCollection> genP_iter;
