@@ -2522,9 +2522,12 @@ if (addMatrixElementInfo){
 
     Handle<GenParticleCollection> genP_iter;
     iEvent.getByToken(gensToken, genP_iter);
+    Handle<PackedGenParticleCollection> packedGenP_iter;
+    iEvent.getByToken(packedGenParticles, packedGenP_iter);
 
     int n_genp = 0;
     int n_genp_ISR = 0;
+    int n_packed_genp = 0;
 
     MatrixElementGenParticle_pt.clear();
     MatrixElementGenParticle_eta.clear();
@@ -2560,11 +2563,17 @@ if (addMatrixElementInfo){
     DarkMatterParticles_mass.clear();
     DarkMatterParticles_pdgId.clear();
     DarkMatterParticles_status.clear();
-
-    for(size_t i = 0; i < genP_iter->size(); ++ i) { 
+    for (size_t i = 0; i < packedGenP_iter->size(); ++ i) {
+        const PackedGenParticle & genP = (*packedGenP_iter)[i];
+        FinalGenParticle_pt.push_back(genP.pt());
+        FinalGenParticle_eta.push_back(genP.eta());
+        FinalGenParticle_phi.push_back(genP.phi());
+        FinalGenParticle_mass.push_back(genP.mass());
+        FinalGenParticle_pdgId.push_back(genP.pdgId());
+        FinalGenParticle_status.push_back(genP.status());
+    }
+    for (size_t i = 0; i < genP_iter->size(); ++ i) {
       const GenParticle & genP = (*genP_iter)[i];
-
-
       //require particle with status 23 or 43 or 1
       if (abs(genP.status()) != 23 && abs(genP.status()) != 43 && abs(genP.status()) != 1) continue;
 
@@ -2621,14 +2630,7 @@ if (addMatrixElementInfo){
         FinalPartonLevelParticle_status.push_back(genP.status());
       }
 
-      if (genP.status() >= 81 & genP.status() <= 89){
-        FinalGenParticle_pt.push_back(genP.pt());
-        FinalGenParticle_eta.push_back(genP.eta());
-        FinalGenParticle_phi.push_back(genP.phi());
-        FinalGenParticle_mass.push_back(genP.mass());
-        FinalGenParticle_pdgId.push_back(genP.pdgId());
-        FinalGenParticle_status.push_back(genP.status());
-      }
+
 
       n_genp++;
   
