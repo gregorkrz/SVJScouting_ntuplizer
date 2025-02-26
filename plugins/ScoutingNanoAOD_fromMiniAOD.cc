@@ -2576,8 +2576,7 @@ if (addMatrixElementInfo){
     for (size_t i = 0; i < genP_iter->size(); ++ i) {
       const GenParticle & genP = (*genP_iter)[i];
       //require particle with status 23 or 43 or 1
-      if (abs(genP.status()) != 23 && abs(genP.status()) != 43 && abs(genP.status()) != 1) continue;
-
+      //if (abs(genP.status()) != 23 && abs(genP.status()) != 43 && abs(genP.status()) != 1) continue;
       if (genP.status()==1 && ( (abs(genP.pdgId()) == 51) || (abs(genP.pdgId()) == 53))){
         DarkMatterParticles_pt.push_back(genP.pt());
         DarkMatterParticles_eta.push_back(genP.eta());
@@ -2586,7 +2585,6 @@ if (addMatrixElementInfo){
         DarkMatterParticles_pdgId.push_back(genP.pdgId());
         DarkMatterParticles_status.push_back(genP.status());
       }
-
       //if particle has status 43, and pdgId is 21 (gluon from ISR), and mother is up quark, or down quark with status 41, then keep it
       bool is_isr_gluon = false;
       if (abs(genP.status()) == 43){
@@ -2630,9 +2628,6 @@ if (addMatrixElementInfo){
         FinalPartonLevelParticle_pdgId.push_back(genP.pdgId());
         FinalPartonLevelParticle_status.push_back(genP.status());
       }
-
-
-
       n_genp++;
   
     }
