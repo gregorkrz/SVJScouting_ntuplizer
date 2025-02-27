@@ -124,7 +124,7 @@
 #include "fastjet/contrib/SoftKiller.hh"
 
 #include "PhysicsTools/CandUtils/interface/EventShapeVariables.h"
-#include "PhysicsTools/CandUtils/interface/Thrust.h"
+#include "PhysicsTools/CandUtils/interface/Thrust.h"s& d
 
 using namespace std;
 using namespace fastjet;
@@ -2620,7 +2620,7 @@ if (addMatrixElementInfo){
         MatrixElementGenParticle_status.push_back(genP.status());
       }
 
-      if (genP.status() >= 51 & genP.status() <= 59) {
+      if (genP.status() >= 51 & genP.status() <= 54) {
         FinalPartonLevelParticle_pt.push_back(genP.pt());
         FinalPartonLevelParticle_eta.push_back(genP.eta());
         FinalPartonLevelParticle_phi.push_back(genP.phi());
