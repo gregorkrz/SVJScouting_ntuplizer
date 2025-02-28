@@ -124,7 +124,7 @@
 #include "fastjet/contrib/SoftKiller.hh"
 
 #include "PhysicsTools/CandUtils/interface/EventShapeVariables.h"
-#include "PhysicsTools/CandUtils/interface/Thrust.h"s& d
+#include "PhysicsTools/CandUtils/interface/Thrust.h"
 
 using namespace std;
 using namespace fastjet;
