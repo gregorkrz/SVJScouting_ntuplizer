@@ -448,5 +448,3 @@ if(params.isMC and use_prefiring):
 else:
   process.p = cms.Path(process.puppi * process.ak8PFJetsPuppi * process.ak8PFPuppiL2L3CorrectorSeq * process.ak8PFHLTL2L3CorrectorSeq * process.ak4PFHLTL2L3CorrectorSeq * process.mmtree)
 
-
-

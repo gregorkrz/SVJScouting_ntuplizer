@@ -1,50 +1,83 @@
+# the input filelist comes from ntuplizer_command_gen.py script from the SVJ clustering repo
 import argparse
+import os
+parser = argparse.ArgumentParser(description='Submit jobs to the cluster')
+#argparse.argument("--input", type=str, help="Input file with listed cmsRun commands")
+#argparse.argument("--n-jobs", type=int, default=10)
+#argparse.argument("--no-submit", "-ns", action="store_true", help="Do not submit the slurm job")
 
-argparse.argument("--input", type=str, help="Input file with listed cmsRun commands")
-argparse.argument("--n-jobs", type=int, default=50)
+parser.add_argument("--input", type=str, help="Input file with listed cmsRun commands", default="/work/gkrzmanc/jetclustering/code/filelist.pkl") #/work/gkrzmanc/jetclustering/code/ntupl_cmds_27feb.txt
+parser.add_argument("--filelist", "-fl", action="store_true") # if true, it will use a pickle filelist instead of the txt file for input
+parser.add_argument("--n-parts", type=int, default=2)
+parser.add_argument("--no-submit", "-ns", action="store_true", help="Do not submit the slurm job")
 
-args = argparse.parse_args()
+args = parser.parse_args()
+assert args.filelist
+#with open(args.input, "r") as f:
+#    cmds = f.readlines()
 
-with open(args.input, "r") as f:
-    cmds = f.readlines()
 
-job_template = f"""
-universe = vanilla
-Executable = jobExecCondorByLine.sh
-+REQUIRED_OS = "rhel7"
-+DesiredOS = REQUIRED_OS
-request_disk = 1000000
-request_memory = 8000
-request_cpus = 4
-Should_Transfer_Files = YES
-WhenToTransferOutput = ON_EXIT
-Transfer_Input_Files = jobExecCondorByLine.sh
-Output = {out}.stdout
-Error = {err}.stderr
-Log = {log}.condor
-notification = Never
-x509userproxy = $ENV(X509_USER_PROXY)
-Arguments = -S step1.sh,step2.sh  -I -C CMSSW_10_6_29_patch1 -X root://t3se01.psi.ch:1094/store/user/gkrzmanc/jetclustering/sim/26Feb_KeepAll -j step_RECO_s-channel_mMed-1400_mDark-20_rinv-0.7_alpha-peak_13TeV-pythia8_n-10 -p $(Process) -o root://t3se01.psi.ch:1094/store/user/gkrzmanc/jetclustering/sim/26Feb_KeepAll/RECO
-want_graceful_removal = true
-on_exit_remove = (ExitBySignal == False) && (ExitCode == 0)
-on_exit_hold = ( (ExitBySignal == True) || (ExitCode != 0) )
-on_exit_hold_reason = strcat("Job held by ON_EXIT_HOLD due to ",\
-        ifThenElse((ExitBySignal == True), "exit by signal", \
-strcat("exit code ",ExitCode)), ".")
-job_machine_attrs = "GLIDEIN_CMSSite"
+import pickle
+filelist = pickle.load(open(args.input, "rb"))
+filelist_keys = sorted(filelist.keys())
+# Launch the slurm jobs
+for i in range(len(filelist_keys)):
+    #cmd = "bash -c 'source /cvmfs/cms.cern.ch/cmsset_default.sh && cmsenv && python PhysicsTools/SVJScouting/exec_lines.py --num-parts {} --input {} --part {}'".format(args.n_jobs, args.input, i)
+    for p in range(args.n_parts):
+        input_fl = ""
+        input_fl_list = []
+        input_fl_xrdcp = []
+        part_min_idx = p * len(filelist[filelist_keys[i]]) // args.n_parts
+        part_max_idx = (p+1) * len(filelist[filelist_keys[i]]) // args.n_parts
+        for c, j in enumerate(sorted(list(filelist[filelist_keys[i]]))):
+            if c < part_min_idx or c >= part_max_idx:
+                continue # for debugging
+            input_fl += " inputFiles=file:$TMPDIR/input/"+os.path.basename(j) + " "
+            input_fl_list += [j]
+            input_fl_xrdcp += ["xrdcp -f " + j + " $TMPDIR/input/ --verbose"]
+        xrdcp_input = "\n".join(input_fl_xrdcp)
+        output_fl = "$TMPDIR/output/PFNano_" + filelist_keys[i] + "_part_{}.root".format(p)
+        cms_cmd = "cmsRun PhysicsTools/SVJScouting/test/ScoutingNanoAOD_fromMiniAOD_cfg.py " + input_fl + " outputFile=" + output_fl + " maxEvents=-1 isMC=true era=2018 signal=True"
+        cmd1 = "bash -c 'source /cvmfs/cms.cern.ch/cmsset_default.sh && cmsenv && " + cms_cmd + "'"
+        if not os.path.exists("jobs/logs"):
+            os.makedirs("jobs/logs")
+        with open("jobs/logs/launch_{}_{}.sh".format(i, p), "w") as f:
+            err = "jobs/logs/launch_{}_{}_err.log".format(i,p )
+            log = "jobs/logs/launch_{}_{}_log.log".format(i, p)
+            job_template = f"""#!/bin/bash
+#SBATCH --partition=standard           # Specify the partition
+#SBATCH --account=t3                  # Specify the account
+#SBATCH --mem=10000                   # Request 10GB of memory
+#SBATCH --time=05:00:00              # Set the time limit to 1 hour
+#SBATCH --job-name=SVJpreproc  # Name the job
+#SBATCH --error={err}         # Redirect stderr to a log file
+#SBATCH --output={log}         # Redirect stderr to a log file
+#SBATCH --mail-type=END,FAIL
+#SBATCH --mail-user=gkrzmanc@student.ethz.ch
 
-Requirements = HAS_SINGULARITY == True
-+AvoidSystemPeriodicRemove = True
-Queue Process in {queue}
+export TMPDIR=/work/${{USER}}/tmp/${{SLURM_JOB_ID}}
 
-"""
+mkdir -p $TMPDIR/input
+mkdir -p $TMPDIR/output
+{xrdcp_input}
+echo 'xrdcp done'
+echo 'Listing the contents:'
+ls $TMPDIR/input
+# write hello world to /scratch/gkrzmanc/374987/output/s-channel_mMed-1000_mDark-20_rinv-0.3_alpha-peak_13TeV-pythia8_n-1000111.root
+export APPTAINER_TMPDIR=/work/gkrzmanc/singularity_tmp
+export APPTAINER_CACHEDIR=/work/gkrzmanc/singularity_cache
+cd /work/gkrzmanc/CMSSW_10_6_26/src
+ls $TMPDIR/output
+srun singularity exec -B /work/gkrzmanc -B /cvmfs docker://cmssw/el7:x86_64 {cmd1}
+echo 'Done - now copying the output'
+xrdcp -f {output_fl} root://t3se01.psi.ch:1094/store/user/gkrzmanc/jetclustering/data/Feb26_2025_E1000_N500/
+rm -rf $TMPDIR
+            """
+            f.write(job_template)
+        print("Wrote to jobs/logs/launch_{}_{}.sh".format(i, p))
+        if not args.no_submit:
+            os.system("sbatch jobs/logs/launch_{}_{}.sh".format(i, p))
 
-# launch the condor jobs
-for i in range(0, len(cmds), args.max_cmds_per_file):
-    with open(f"condor_{i}.sh", "w") as f:
-        f.write("#!/bin/bash\n")
-        for j in range(args.max_cmds_per_file):
-            if i+j < len(cmds):
-                f.write(cmds[i+j])
-    os.system(f"chmod +x condor_{i}.sh")
-    os.system(f"condor_submit condor_{i}.sh")
+
+# /work/gkrzmanc/jetclustering/code/filelist.pkl
+
