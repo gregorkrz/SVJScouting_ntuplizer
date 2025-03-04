@@ -66,7 +66,7 @@ export APPTAINER_TMPDIR=/work/gkrzmanc/singularity_tmp
 export APPTAINER_CACHEDIR=/work/gkrzmanc/singularity_cache
 cd /work/gkrzmanc/CMSSW_10_6_26/src
 ls $TMPDIR/output
-srun singularity exec -B /work/gkrzmanc -B /cvmfs -B /pnfs docker://cmssw/el7:x86_64 {cmd1}
+srun singularity exec -B /work/gkrzmanc -B /cvmfs -B /pnfs -B /scratch docker://cmssw/el7:x86_64 {cmd1}
 echo 'Done - now copying the output'
 xrdcp -f {output_fl} root://t3se01.psi.ch:1094/store/user/gkrzmanc/jetclustering/data/Feb26_2025_E1000_N500/
 echo 'Copied'
