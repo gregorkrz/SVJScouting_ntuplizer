@@ -16,7 +16,6 @@ assert args.filelist
 #with open(args.input, "r") as f:
 #    cmds = f.readlines()
 
-
 import pickle
 filelist = pickle.load(open(args.input, "rb"))
 filelist_keys = sorted(filelist.keys())
@@ -49,13 +48,12 @@ for i in range(len(filelist_keys)):
 #SBATCH --account=t3                  # Specify the account
 #SBATCH --mem=10000                   # Request 10GB of memory
 #SBATCH --time=05:00:00              # Set the time limit to 1 hour
-#SBATCH --job-name=SVJpreproc  # Name the job
 #SBATCH --error={err}         # Redirect stderr to a log file
 #SBATCH --output={log}         # Redirect stderr to a log file
 #SBATCH --mail-type=END,FAIL
 #SBATCH --mail-user=gkrzmanc@student.ethz.ch
 
-export TMPDIR=/work/${{USER}}/tmp/${{SLURM_JOB_ID}}
+export TMPDIR=/scratch/${{USER}}/tmp/${{SLURM_JOB_ID}}
 
 mkdir -p $TMPDIR/input
 mkdir -p $TMPDIR/output
@@ -68,10 +66,12 @@ export APPTAINER_TMPDIR=/work/gkrzmanc/singularity_tmp
 export APPTAINER_CACHEDIR=/work/gkrzmanc/singularity_cache
 cd /work/gkrzmanc/CMSSW_10_6_26/src
 ls $TMPDIR/output
-srun singularity exec -B /work/gkrzmanc -B /cvmfs docker://cmssw/el7:x86_64 {cmd1}
+srun singularity exec -B /work/gkrzmanc -B /cvmfs -B /pnfs docker://cmssw/el7:x86_64 {cmd1}
 echo 'Done - now copying the output'
 xrdcp -f {output_fl} root://t3se01.psi.ch:1094/store/user/gkrzmanc/jetclustering/data/Feb26_2025_E1000_N500/
+echo 'Copied'
 rm -rf $TMPDIR
+echo 'removed the tmp dirs'
             """
             f.write(job_template)
         print("Wrote to jobs/logs/launch_{}_{}.sh".format(i, p))
