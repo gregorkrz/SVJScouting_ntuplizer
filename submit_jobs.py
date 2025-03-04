@@ -78,6 +78,5 @@ echo 'removed the tmp dirs'
         if not args.no_submit:
             os.system("sbatch jobs/logs/launch_{}_{}.sh".format(i, p))
 
-
 # /work/gkrzmanc/jetclustering/code/filelist.pkl
 
