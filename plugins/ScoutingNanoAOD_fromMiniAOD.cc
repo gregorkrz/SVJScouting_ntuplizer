@@ -2565,6 +2565,8 @@ if (addMatrixElementInfo){
     DarkMatterParticles_status.clear();
     for (size_t i = 0; i < packedGenP_iter->size(); ++ i) {
         const pat::PackedGenParticle & genP = (*packedGenP_iter)[i];
+        if (genP.pt() < 0.5) continue;
+        if (abs(genP.eta()) >= 2.4 ) continue;
         FinalGenParticle_pt.push_back(genP.pt());
         FinalGenParticle_eta.push_back(genP.eta());
         FinalGenParticle_phi.push_back(genP.phi());
@@ -2600,6 +2602,7 @@ if (addMatrixElementInfo){
       if (genP.pdgId() == 21 && is_isr_gluon == false) continue;
 
       if (genP.pt() < 0.5) continue;
+      if (abs(genP.eta()) >= 2.4 ) continue;
     
       if (genP.pdgId() == 21){
         ISRGluonGenParticle_pt.push_back(genP.pt());
