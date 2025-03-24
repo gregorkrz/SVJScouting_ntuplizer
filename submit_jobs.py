@@ -36,6 +36,7 @@ for i in range(len(filelist_keys)):
             input_fl_xrdcp += ["xrdcp -f " + j + " $TMPDIR/input/ --verbose"]
         xrdcp_input = "\n".join(input_fl_xrdcp)
         output_fl = "$TMPDIR/output/PFNano_" + filelist_keys[i] + "_part_{}.root".format(p)
+        output_filename = "PFNano_" + filelist_keys[i] + "_part_{}.root".format(p)
         cms_cmd = "cmsRun PhysicsTools/SVJScouting/test/ScoutingNanoAOD_fromMiniAOD_cfg.py " + input_fl + " outputFile=" + output_fl + " maxEvents=-1 isMC=true era=2018 signal=True"
         cmd1 = "bash -c 'source /cvmfs/cms.cern.ch/cmsset_default.sh && cmsenv && " + cms_cmd + "'"
         if not os.path.exists("jobs/logs"):
@@ -67,8 +68,12 @@ export APPTAINER_CACHEDIR=/work/gkrzmanc/singularity_cache
 cd /work/gkrzmanc/CMSSW_10_6_26/src
 ls $TMPDIR/output
 srun singularity exec -B /work/gkrzmanc -B /cvmfs -B /pnfs -B /scratch docker://cmssw/el7:x86_64 {cmd1}
+echo 'ls $tmpdir'
+ls $TMPDIR
+echo '......'
+ls $TMPDIR/output
 echo 'Done - now copying the output'
-xrdcp -f {output_fl} root://t3se01.psi.ch:1094/store/user/gkrzmanc/jetclustering/data/Feb26_2025_E1000_N500/
+xrdcp -f {output_fl} root://t3se01.psi.ch:1094/store/user/gkrzmanc/jetclustering/data/Feb26_2025_E1000_N500_noPartonFilter/{output_filename}
 echo 'Copied'
 rm -rf $TMPDIR
 echo 'removed the tmp dirs'

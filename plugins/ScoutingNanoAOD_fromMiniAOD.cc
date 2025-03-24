@@ -2601,8 +2601,8 @@ if (addMatrixElementInfo){
       //if pdg is 21 and is ISR gluon, keep it
       if (genP.pdgId() == 21 && is_isr_gluon == false) continue;
 
-      if (genP.pt() < 0.5) continue;
-      if (abs(genP.eta()) >= 2.4 ) continue;
+      //if (genP.pt() < 0.5) continue;
+      //if (abs(genP.eta()) >= 2.4) continue;
     
       if (genP.pdgId() == 21){
         ISRGluonGenParticle_pt.push_back(genP.pt());
@@ -2623,7 +2623,7 @@ if (addMatrixElementInfo){
         MatrixElementGenParticle_status.push_back(genP.status());
       }
 
-      if (genP.status() >= 51 & genP.status() <= 59) {
+      if (genP.sta1tus() >= 51 & genP.status() <= 59) {
         FinalPartonLevelParticle_pt.push_back(genP.pt());
         FinalPartonLevelParticle_eta.push_back(genP.eta());
         FinalPartonLevelParticle_phi.push_back(genP.phi());
@@ -2632,7 +2632,6 @@ if (addMatrixElementInfo){
         FinalPartonLevelParticle_status.push_back(genP.status());
       }
       n_genp++;
-  
     }
     // print genp statuses
     cout << "genP statuses: ";
