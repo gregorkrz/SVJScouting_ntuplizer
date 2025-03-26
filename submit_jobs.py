@@ -8,7 +8,7 @@ parser = argparse.ArgumentParser(description='Submit jobs to the cluster')
 
 parser.add_argument("--input", type=str, help="Input file with listed cmsRun commands", default="/work/gkrzmanc/jetclustering/code/filelist.pkl") #/work/gkrzmanc/jetclustering/code/ntupl_cmds_27feb.txt
 parser.add_argument("--filelist", "-fl", action="store_true") # if true, it will use a pickle filelist instead of the txt file for input
-parser.add_argument("--n-parts", type=int, default=2)
+parser.add_argument("--n-parts", type=int, default=5)
 parser.add_argument("--no-submit", "-ns", action="store_true", help="Do not submit the slurm job")
 
 args = parser.parse_args()
@@ -62,7 +62,6 @@ mkdir -p $TMPDIR/output
 echo 'xrdcp done'
 echo 'Listing the contents:'
 ls $TMPDIR/input
-# write hello world to /scratch/gkrzmanc/374987/output/s-channel_mMed-1000_mDark-20_rinv-0.3_alpha-peak_13TeV-pythia8_n-1000111.root
 export APPTAINER_TMPDIR=/work/gkrzmanc/singularity_tmp
 export APPTAINER_CACHEDIR=/work/gkrzmanc/singularity_cache
 cd /work/gkrzmanc/CMSSW_10_6_26/src
@@ -73,7 +72,8 @@ ls $TMPDIR
 echo '......'
 ls $TMPDIR/output
 echo 'Done - now copying the output'
-xrdcp -f {output_fl} root://t3se01.psi.ch:1094/store/user/gkrzmanc/jetclustering/data/Feb26_2025_E1000_N500_noPartonFilter/{output_filename}
+echo 'Now running xrdcp' >&2
+cp  {output_fl} /work/gkrzmanc/jetclustering/data/Feb26_2025_E1000_N500_noPartonFilter_C/{output_filename}
 echo 'Copied'
 rm -rf $TMPDIR
 echo 'removed the tmp dirs'
