@@ -2599,7 +2599,7 @@ if (addMatrixElementInfo){
       }
 
       //if pdg is 21 and is ISR gluon, keep it
-      if (genP.pdgId() == 21 && is_isr_gluon == false) continue;
+      // if (genP.pdgId() == 21 && is_isr_gluon == false) continue; // ALSO KEEP THE GLUONS
 
       //if (genP.pt() < 0.5) continue;
       //if (abs(genP.eta()) >= 2.4) continue;
