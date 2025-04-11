@@ -73,7 +73,7 @@ echo '......'
 ls $TMPDIR/output
 echo 'Done - now copying the output'
 echo 'Now running xrdcp' >&2
-cp  {output_fl} /work/gkrzmanc/jetclustering/data/Feb26_2025_E1000_N500_noPartonFilter_C/{output_filename}
+cp  {output_fl} /work/gkrzmanc/jetclustering/data/Feb26_2025_E1000_N500_noPartonFilter_GluonFix/{output_filename}
 echo 'Copied'
 rm -rf $TMPDIR
 echo 'removed the tmp dirs'
@@ -84,4 +84,3 @@ echo 'removed the tmp dirs'
             os.system("sbatch jobs/logs/launch_{}_{}.sh".format(i, p))
 
 # /work/gkrzmanc/jetclustering/code/filelist.pkl
-

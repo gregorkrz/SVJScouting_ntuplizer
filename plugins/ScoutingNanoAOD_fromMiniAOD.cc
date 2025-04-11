@@ -2588,14 +2588,14 @@ if (addMatrixElementInfo){
         DarkMatterParticles_status.push_back(genP.status());
       }
       //if particle has status 43, and pdgId is 21 (gluon from ISR), and mother is up quark, or down quark with status 41, then keep it
-      bool is_isr_gluon = false;
+      //bool is_isr_gluon = false;
       if (abs(genP.status()) == 43){
         if ((genP.pdgId() == 21) && (n_genp_ISR == 0) ){
           if ((abs(genP.mother()->pdgId()) == 2212) && abs(genP.mother()->status()) == 4){
-            is_isr_gluon = true;
+            //is_isr_gluon = true;
             n_genp_ISR++;
-          } else is_isr_gluon = false;
-        } else is_isr_gluon = false;
+          }// else is_isr_gluon = false;
+        }// else is_isr_gluon = false;
       }
 
       //if pdg is 21 and is ISR gluon, keep it
