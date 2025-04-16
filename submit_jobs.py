@@ -7,15 +7,12 @@ parser = argparse.ArgumentParser(description='Submit jobs to the cluster')
 #argparse.argument("--no-submit", "-ns", action="store_true", help="Do not submit the slurm job")
 
 parser.add_argument("--input", type=str, help="Input file with listed cmsRun commands", default="/work/gkrzmanc/jetclustering/code/filelist.pkl") #/work/gkrzmanc/jetclustering/code/ntupl_cmds_27feb.txt
-parser.add_argument("--filelist", "-fl", action="store_true") # if true, it will use a pickle filelist instead of the txt file for input
 parser.add_argument("--n-parts", type=int, default=5)
 parser.add_argument("--no-submit", "-ns", action="store_true", help="Do not submit the slurm job")
 
 args = parser.parse_args()
-assert args.filelist
 #with open(args.input, "r") as f:
 #    cmds = f.readlines()
-
 import pickle
 filelist = pickle.load(open(args.input, "rb"))
 filelist_keys = sorted(filelist.keys())
@@ -35,9 +32,10 @@ for i in range(len(filelist_keys)):
             input_fl_list += [j]
             input_fl_xrdcp += ["xrdcp -f " + j + " $TMPDIR/input/ --verbose"]
         xrdcp_input = "\n".join(input_fl_xrdcp)
-        output_fl = "$TMPDIR/output/PFNano_" + filelist_keys[i] + "_part_{}.root".format(p)
+        output_fl = "$TMPDIR/output/"
         output_filename = "PFNano_" + filelist_keys[i] + "_part_{}.root".format(p)
-        cms_cmd = "cmsRun PhysicsTools/SVJScouting/test/ScoutingNanoAOD_fromMiniAOD_cfg.py " + input_fl + " outputFile=" + output_fl + " maxEvents=-1 isMC=true era=2018 signal=True"
+
+        cms_cmd = "cmsRun PhysicsTools/SVJScouting/test/ScoutingNanoAOD_fromMiniAOD_cfg.py " + input_fl + " outputFile=" + output_fl + output_filename + " maxEvents=2000 isMC=true era=2018 signal=True"
         cmd1 = "bash -c 'source /cvmfs/cms.cern.ch/cmsset_default.sh && cmsenv && " + cms_cmd + "'"
         if not os.path.exists("jobs/logs"):
             os.makedirs("jobs/logs")
@@ -73,14 +71,16 @@ echo '......'
 ls $TMPDIR/output
 echo 'Done - now copying the output'
 echo 'Now running xrdcp' >&2
-cp  {output_fl} /work/gkrzmanc/jetclustering/data/Feb26_2025_E1000_N500_noPartonFilter_GluonFix/{output_filename}
+cp  {output_fl}*.root /work/gkrzmanc/jetclustering/data/Feb26_2025_E1000_N500_noPartonFilter_GluonFix_Full/
 echo 'Copied'
 rm -rf $TMPDIR
 echo 'removed the tmp dirs'
             """
             f.write(job_template)
+
         print("Wrote to jobs/logs/launch_{}_{}.sh".format(i, p))
         if not args.no_submit:
             os.system("sbatch jobs/logs/launch_{}_{}.sh".format(i, p))
 
 # /work/gkrzmanc/jetclustering/code/filelist.pkl
+

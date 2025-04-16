@@ -2579,7 +2579,7 @@ if (addMatrixElementInfo){
       const GenParticle & genP = (*genP_iter)[i];
       //require particle with status 23 or 43 or 1
       //if (abs(genP.status()) != 23 && abs(genP.status()) != 43 && abs(genP.status()) != 1) continue;
-      if (genP.status()==1 && ( (abs(genP.pdgId()) == 51) || (abs(genP.pdgId()) == 53))){
+      if (genP.status()==1 && ((abs(genP.pdgId()) == 51) || (abs(genP.pdgId()) == 53))){
         DarkMatterParticles_pt.push_back(genP.pt());
         DarkMatterParticles_eta.push_back(genP.eta());
         DarkMatterParticles_phi.push_back(genP.phi());
@@ -2588,23 +2588,23 @@ if (addMatrixElementInfo){
         DarkMatterParticles_status.push_back(genP.status());
       }
       //if particle has status 43, and pdgId is 21 (gluon from ISR), and mother is up quark, or down quark with status 41, then keep it
-      //bool is_isr_gluon = false;
+      bool is_isr_gluon = false;
       if (abs(genP.status()) == 43){
         if ((genP.pdgId() == 21) && (n_genp_ISR == 0) ){
           if ((abs(genP.mother()->pdgId()) == 2212) && abs(genP.mother()->status()) == 4){
-            //is_isr_gluon = true;
+            is_isr_gluon = true;
             n_genp_ISR++;
-          }// else is_isr_gluon = false;
-        }// else is_isr_gluon = false;
+          } else is_isr_gluon = false;
+        } else is_isr_gluon = false;
       }
 
       //if pdg is 21 and is ISR gluon, keep it
-      // if (genP.pdgId() == 21 && is_isr_gluon == false) continue; // ALSO KEEP THE GLUONS
+      //if (genP.pdgId() == 21 && is_isr_gluon == false) continue; // ALSO KEEP THE GLUONS
 
-      //if (genP.pt() < 0.5) continue;
-      //if (abs(genP.eta()) >= 2.4) continue;
+      if (genP.pt() < 0.5) continue;
+      if (abs(genP.eta()) >= 2.4) continue;
     
-      if (genP.pdgId() == 21){
+      if (genP.pdgId() == 21 && is_isr_gluon){
         ISRGluonGenParticle_pt.push_back(genP.pt());
         ISRGluonGenParticle_eta.push_back(genP.eta());
         ISRGluonGenParticle_phi.push_back(genP.phi());
@@ -2622,7 +2622,6 @@ if (addMatrixElementInfo){
         MatrixElementGenParticle_pdgId.push_back(genP.pdgId());
         MatrixElementGenParticle_status.push_back(genP.status());
       }
-
       if ((genP.status() >= 51) & (genP.status() <= 59)) {
         FinalPartonLevelParticle_pt.push_back(genP.pt());
         FinalPartonLevelParticle_eta.push_back(genP.eta());
